@@ -23,17 +23,26 @@ export default function Home() {
             const data = await response.json();
             if (data.meals === null) {
                 resultHeading.current.textContent = `There are no search results. Try again!`;
+                setShowResult(false)
+                setKeyword('')
                 return;
+            } else {
+                setMeals(data.meals);
+                setShowResult(true)
+                setShowReceipe(false)
+                setKeyword('')
+                resultHeading.current.textContent = `Search result for '${keyword}':`;
             }
-            setMeals(data.meals);
-            setShowResult(true)
-            setShowReceipe(false)
-            setKeyword('')
-            resultHeading.current.textContent = `Search result for '${keyword}':`;
         } catch (error) {
             console.log(error);
         }
     }
+
+    useEffect(()=> {
+        if(showReceipe) {
+            resultHeading.current.textContent = '' 
+        }
+    }, [showReceipe])
 
 
     const random = async () => {
@@ -69,9 +78,9 @@ export default function Home() {
                     <i className="fa fa-random" aria-hidden="true"></i>
                 </button>
             </div>
-
+            <div id="result-heading"><h2 ref={resultHeading}></h2></div>
             {
-                showResult ? <><div id="result-heading"><h2 ref={resultHeading}></h2></div><SearchResult meals={meals} /></> : null
+                showResult ? <><SearchResult meals={meals} /></> : null
             }
             {
                 showReceipe ? <Receipe meal={currentReceipe} /> : null
